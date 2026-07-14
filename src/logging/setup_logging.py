@@ -3,6 +3,8 @@ import logging.handlers
 from enum import Enum
 from logging.handlers import TimedRotatingFileHandler
 
+import sys
+
 
 class Log(Enum):
     BOT = "bot"
@@ -28,10 +30,12 @@ def setup_logging():
     bot_log = logging.getLogger(Log.BOT.value)
     bot_log.setLevel(logging.DEBUG)
     bot_log.addHandler(make_handler("bot.log"))
+    bot_log.addHandler(logging.StreamHandler(sys.stdout))
 
     downloader_log = logging.getLogger(Log.DOWNLOADER.value)
     downloader_log.setLevel(logging.DEBUG)
     downloader_log.addHandler(make_handler("downloader.log"))
+    downloader_log.addHandler(logging.StreamHandler(sys.stdout))
 
     bot_log.info("Starting bot...")
     downloader_log.info("Starting downloader...")
