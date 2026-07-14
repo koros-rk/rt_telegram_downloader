@@ -1,0 +1,30 @@
+import asyncio
+import os
+
+from dotenv import load_dotenv
+from telegram.ext import Application, MessageHandler
+
+from src.bot.filters.instagram_url_filter import InstagramFilter
+from src.bot.filters.tiktok_url_filter import TikTokFilter
+from src.bot.filters.youtube_url_filter import YoutubeFilter
+from src.bot.handlers.url_message_handler import url_message_handler
+
+load_dotenv()
+BOT_TOKEN = os.getenv("TELEGRAB_BOT_TOKEN")
+application = Application.builder().token(BOT_TOKEN).build()
+
+
+async def bootstrap():
+    async with application as app:
+        app.add_handler(
+            MessageHandler(
+                TikTokFilter() ^ InstagramFilter() ^ YoutubeFilter(),
+                url_message_handler,
+            )
+        )
+
+        await application.start()
+        await application.updater.start_polling()
+        await asyncio.Event().wait()
+        await application.updater.stop()
+        await application.stop()
