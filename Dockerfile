@@ -27,5 +27,7 @@ RUN uv pip install -U "yt-dlp[default]" curl_cffi
 # Make sure the venv is on PATH
 ENV PATH="/app/.venv/bin:$PATH"
 
+EXPOSE 8000
+
 # Run the bot
 CMD ["python", "-m", "main"]
