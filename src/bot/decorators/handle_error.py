@@ -1,10 +1,9 @@
 import functools
 import logging
-from pprint import pprint
 
+import telegram.error
 from telegram import Update
 from telegram.ext import ContextTypes
-from yt_dlp.utils import UnsupportedError
 
 from src.downloader.errors.file_too_large import FileTooLarge
 from src.downloader.errors.url_not_supported import UrlNotSupported
@@ -15,6 +14,7 @@ logger = logging.getLogger(Log.BOT.value)
 DEFAULT_ERROR_MESSAGE = "Unable to process your message. Please try again later."
 UNSUPPORTED_FORMAT_MESSAGE = "Unsupported resource. Please try another one."
 FILE_TOO_LARGE_MESSAGE = "Resource file is too large. Please try another one."
+TIMEOUT_MESSAGE = "Resource download timed out. Please try again later."
 
 
 async def send_tg_message(update: Update, message: str):
@@ -33,6 +33,10 @@ def handle_errors():
         async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
             try:
                 return await func(update, context)
+            except telegram.error.TimedOut as e:
+                await send_tg_message(update, TIMEOUT_MESSAGE)
+                logger.info(e.message)
+                return None
             except FileTooLarge as e:
                 logger.info(e.message)
                 await send_tg_message(update, FILE_TOO_LARGE_MESSAGE)
