@@ -3,7 +3,7 @@ import os
 
 from aiohttp import web
 from dotenv import load_dotenv
-from telegram.ext import Application, MessageHandler
+from telegram.ext import Application, MessageHandler, filters
 
 from src.bot.filters.instagram_url_filter import InstagramFilter
 from src.bot.filters.tiktok_url_filter import TikTokFilter
@@ -31,7 +31,18 @@ async def start_dummy_server():
 
 async def bootstrap_bot():
     async with application as app:
-        app.add_handler(MessageHandler(VideoUrlFilter(), video_url_handler))
+        app.add_handler(
+            MessageHandler(
+                VideoUrlFilter(),
+                video_url_handler,
+            )
+        )
+        app.add_handler(
+            MessageHandler(
+                filters.ChatType.GROUP & VideoUrlFilter(),
+                video_url_handler,
+            )
+        )
 
         await start_dummy_server()
 
