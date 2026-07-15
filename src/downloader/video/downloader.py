@@ -7,22 +7,16 @@ from functools import partial
 
 from src.downloader.errors.file_too_large import FileTooLarge
 from src.downloader.errors.url_not_supported import UrlNotSupported
-from src.downloader.video.get_config import build_ydl_opts
+from src.downloader.video.get_config import build_ydl_opts, TELEGRAM_MAX_MB
 from src.downloader.video.is_supported import is_supported
 from src.logging.setup_logging import Log
-
-TELEGRAM_MAX_MB = 50
-TELEGRAM_MAX_BYTES = TELEGRAM_MAX_MB * 1024 * 1024
-
-DOWNLOAD_DIR = "downloads"
-os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 logger = logging.getLogger(Log.DOWNLOADER.value)
 
 
 def _download_sync(url: str, max_size_mb: int) -> bytes:
     logger.info(f"Starting download: url={url}.")
-    opts = build_ydl_opts(max_size_mb, directory=DOWNLOAD_DIR)
+    opts = build_ydl_opts(max_size_mb)
 
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=True)
@@ -49,7 +43,7 @@ def _download_sync(url: str, max_size_mb: int) -> bytes:
 
 
 async def video_downloader(url: str) -> bytes:
-    if not is_supported(url, TELEGRAM_MAX_MB, DOWNLOAD_DIR):
+    if not is_supported(url):
         raise UrlNotSupported(url)
 
     loop = asyncio.get_running_loop()

@@ -8,7 +8,16 @@ from src.logging.setup_logging import Log
 logger = logging.getLogger(Log.DOWNLOADER.value)
 
 
-def build_ydl_opts(max_size_mb: int, directory: str) -> dict:
+TELEGRAM_MAX_MB = 50
+TELEGRAM_MAX_BYTES = TELEGRAM_MAX_MB * 1024 * 1024
+
+DOWNLOAD_DIR = "downloads"
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+
+
+def build_ydl_opts(
+    max_size_mb: int = TELEGRAM_MAX_MB, directory: str = DOWNLOAD_DIR
+) -> dict:
     max_bytes = max_size_mb * 1024 * 1024
 
     return {

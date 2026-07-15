@@ -1,11 +1,10 @@
 import yt_dlp.utils
 
-from src.downloader.video.downloader import TELEGRAM_MAX_MB, DOWNLOAD_DIR
 from src.downloader.video.get_config import build_ydl_opts
 
 
-def is_supported(url: str, max_size_mb: int = TELEGRAM_MAX_MB, directory: str = DOWNLOAD_DIR) -> bool:
-    opts = build_ydl_opts(max_size_mb, directory)
+def is_supported(url: str) -> bool:
+    opts = build_ydl_opts()
 
     with yt_dlp.YoutubeDL(opts) as ydl:
         try:
