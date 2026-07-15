@@ -30,11 +30,12 @@ async def send_tg_message(update: Update, message: str):
 def handle_errors():
     def decorator(func):
         @functools.wraps(func)
-        async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        async def wrapper(
+            update: Update, context: ContextTypes.DEFAULT_TYPE, *args, **kwargs
+        ):
             try:
-                return await func(update, context)
+                return await func(update, context, *args, **kwargs)
             except telegram.error.TimedOut as e:
-                await send_tg_message(update, TIMEOUT_MESSAGE)
                 logger.info(e.message)
                 return None
             except FileTooLarge as e:

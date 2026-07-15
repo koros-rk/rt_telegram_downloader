@@ -7,8 +7,9 @@ from telegram.ext import Application, MessageHandler
 
 from src.bot.filters.instagram_url_filter import InstagramFilter
 from src.bot.filters.tiktok_url_filter import TikTokFilter
+from src.bot.filters.video_url_filter import VideoUrlFilter
 from src.bot.filters.youtube_url_filter import YoutubeFilter
-from src.bot.handlers.url_message_handler import url_message_handler
+from src.bot.handlers.video_url_handler import video_url_handler
 
 load_dotenv()
 BOT_TOKEN = os.getenv("TELEGRAB_BOT_TOKEN")
@@ -28,14 +29,9 @@ async def start_dummy_server():
     await site.start()
 
 
-async def bootstrap():
+async def bootstrap_bot():
     async with application as app:
-        app.add_handler(
-            MessageHandler(
-                TikTokFilter() ^ InstagramFilter() ^ YoutubeFilter(),
-                url_message_handler,
-            )
-        )
+        app.add_handler(MessageHandler(VideoUrlFilter(), video_url_handler))
 
         await start_dummy_server()
 
